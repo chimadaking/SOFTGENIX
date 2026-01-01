@@ -1,0 +1,21 @@
+# Deny access to sensitive files
+<FilesMatch "\.(htaccess|env|ini|log|sql|yml|yaml)$">
+    Order deny,allow
+    Deny from all
+</FilesMatch>
+
+# Disable directory browsing
+Options -Indexes
+
+# PHP routing - rewrite all requests to index.php with url parameter
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteBase /softgenix/public/
+    
+    # If the request is not for a real file (css, js, images, etc.)
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    
+    # Rewrite to index.php with url parameter
+    RewriteRule ^(.*)$ index.php?url=$1 [L,QSA]
+</IfModule>
