@@ -170,7 +170,8 @@ class AdminController extends BaseController {
             redirect('admin/users');
         }
 
-        $newStatus = $user->status === 'active' ? 'disabled' : 'active';
+        // Users can only be in 'pending', 'active', or 'suspended' states per schema
+        $newStatus = $user->status === 'active' ? 'suspended' : 'active';
 
         if ($this->userModel->updateStatus($userId, $newStatus)) {
             flash('success', 'User status updated');

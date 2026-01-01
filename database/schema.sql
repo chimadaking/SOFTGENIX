@@ -43,6 +43,42 @@ CREATE TABLE IF NOT EXISTS api_providers (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+-- API Instances table
+CREATE TABLE IF NOT EXISTS api_instances (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    provider_id INT NOT NULL,
+    name VARCHAR(100) NOT NULL,
+    base_url VARCHAR(255) NOT NULL,
+    api_key VARCHAR(255),
+    status ENUM('active', 'inactive') DEFAULT 'active',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (provider_id) REFERENCES api_providers(id) ON DELETE CASCADE
+);
+
+-- API Services table
+CREATE TABLE IF NOT EXISTS api_services (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    api_instance_id INT NOT NULL,
+    external_service_id VARCHAR(100) NOT NULL,
+    name VARCHAR(150) NOT NULL,
+    category VARCHAR(150) DEFAULT NULL,
+    type VARCHAR(100) DEFAULT NULL,
+    api_rate DECIMAL(15, 4) NOT NULL DEFAULT 0,
+    markup DECIMAL(15, 4) NOT NULL DEFAULT 0,
+    final_price DECIMAL(15, 4) NOT NULL DEFAULT 0,
+    min_qty INT NOT NULL DEFAULT 1,
+    max_qty INT NOT NULL DEFAULT 100000,
+    status ENUM('active', 'inactive') DEFAULT 'inactive',
+    visible ENUM('yes', 'no') DEFAULT 'no',
+    extra JSON DEFAULT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    UNIQUE KEY uniq_instance_service (api_instance_id, external_service_id),
+    INDEX idx_api_services_instance (api_instance_id),
+    FOREIGN KEY (api_instance_id) REFERENCES api_instances(id) ON DELETE CASCADE
+);
+
 -- Categories table
 CREATE TABLE IF NOT EXISTS categories (
     id INT AUTO_INCREMENT PRIMARY KEY,
